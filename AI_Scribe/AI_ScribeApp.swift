@@ -11,7 +11,7 @@ import SwiftUI
 struct AI_ScribeApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeView(recordingsManager: RecordingsManager.shared)
         }
     }
 }
