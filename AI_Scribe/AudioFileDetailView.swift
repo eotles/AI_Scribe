@@ -25,8 +25,6 @@ struct AudioFileDetailView: View {
     @State private var selectedKey: String = "lastLiveTranscription"
     @State private var selectedString: String = ""
     
-    let bert = BERT()
-    
     init(audioFile: AudioFile, recordingsManager: RecordingsManager, deletedCallback: @escaping () -> ()) {
         self.audioFile = audioFile
         self.recordingsManager = recordingsManager
@@ -66,41 +64,6 @@ struct AudioFileDetailView: View {
             }
             
             Spacer()
-            
-            /*
-            VStack {
-                
-                
-                HStack {
-                    Spacer()
-                    
-                    Text("Question: ")
-                    
-                    TextField("What are their symptoms?", text: $question)
-        
-                    Button( action: {
-                        DispatchQueue.global(qos: .userInitiated).async {
-                            answer = self.bert.findAnswer(for: question, in: selectedString)
-                            //DispatchQueue.main.async {
-                            //    let range = displayText.range(of: answer)!
-                            //    displayText[range].foregroundColor = .green
-                            //}
-                        }
-                            
-                    }){Text("Find")}
-                    
-                    Spacer()
-                    
-                }
-                Text("Answer: \(String(answer))")
-                
-                Spacer()
-            }
-            .padding()
-             */
-            
-            
-            //Text("File URL: \(audioFile.relativeURL)")
             
             
             Text("Current Time: \(formattedTime(currentTime))")

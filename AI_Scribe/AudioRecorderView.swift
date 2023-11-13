@@ -6,12 +6,18 @@
 //
 
 import SwiftUI
+import AVFoundation
+import MobileCoreServices
 
 struct AudioRecorderView: View {
     @Environment(\.dismiss) var dismiss
     
     @ObservedObject var audioRecorder: AudioRecorder
     var doneRecording: () -> Void
+    
+    @State private var isFilePickerShown = false
+    @State private var pickedURL: URL?
+    @State private var isLoading = false
     
     var body: some View {
         VStack{
@@ -26,60 +32,63 @@ struct AudioRecorderView: View {
             
             Spacer()
             
-            HStack {
-                
-                Spacer()
-                
-                Text("\(formattedTime)")
-                
-                
-                Spacer()
-                
-                Button(action: {
-                    print("Recording: \(audioRecorder.recording), Paused: \(audioRecorder.paused)")
+            if isLoading {
+                ProgressView()
+            } else {
+                HStack {
                     
-                    if audioRecorder.recording && !audioRecorder.paused {
-                        print("Button - Pause")
-                        audioRecorder.pauseRecording()
-                        
-                    } else if audioRecorder.paused {
-                        print("Button - Resume")
-                        audioRecorder.resumeRecording()
-                        
-                    } else {
-                        print("Button - Start")
-                        audioRecorder.startRecording()
-                        
-                    }
+                    Spacer()
                     
-                    print("Recording: \(audioRecorder.recording), Paused: \(audioRecorder.paused)")
-                }) {
-                    if audioRecorder.recording && !audioRecorder.paused {
-                        AudioRecordPauseButton()
-                    } else if audioRecorder.paused {
-                        AudioRecordResumeButton()
-                    } else {
-                        AudioRecordStartButton()
+                    Text("\(formattedTime)")
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        print("Recording: \(audioRecorder.recording), Paused: \(audioRecorder.paused)")
+                        
+                        if audioRecorder.recording && !audioRecorder.paused {
+                            print("Button - Pause")
+                            audioRecorder.pauseRecording()
+                            
+                        } else if audioRecorder.paused {
+                            print("Button - Resume")
+                            audioRecorder.resumeRecording()
+                            
+                        } else {
+                            print("Button - Start")
+                            audioRecorder.startRecording()
+                            
+                        }
+                        
+                        print("Recording: \(audioRecorder.recording), Paused: \(audioRecorder.paused)")
+                    }) {
+                        if audioRecorder.recording && !audioRecorder.paused {
+                            AudioRecordPauseButton()
+                        } else if audioRecorder.paused {
+                            AudioRecordResumeButton()
+                        } else {
+                            AudioRecordStartButton()
+                        }
                     }
+                    .disabled(audioRecorder.complete)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        audioRecorder.stopRecording()
+                        doneRecording()
+                        print("Recording: \(audioRecorder.recording), Paused: \(audioRecorder.paused)")
+                        dismiss()
+                    }) {
+                        Text("Done")
+                    }
+                    .disabled(!audioRecorder.recording)
+                    
+                    Spacer()
+                    
                 }
-                //.disabled(audioRecorder.audioFileName != nil)
-                .disabled(audioRecorder.complete)
-                
-                Spacer()
-                
-                Button(action: {
-                    audioRecorder.stopRecording()
-                    doneRecording()
-                    print("Recording: \(audioRecorder.recording), Paused: \(audioRecorder.paused)")
-                    dismiss()
-                }) {
-                    Text("Done")
-                }
-                .disabled(!audioRecorder.recording)
-                
-                Spacer()
-                
             }
+            
             Spacer()
             
         }
@@ -93,6 +102,7 @@ struct AudioRecorderView: View {
         formatter.zeroFormattingBehavior = .pad
         return formatter.string(from: audioRecorder.audioLength) ?? "0:00"
     }
+
 }
 
 struct AudioRecorderView_Previews: PreviewProvider {
@@ -105,4 +115,3 @@ struct AudioRecorderView_Previews: PreviewProvider {
         )
     }
 }
-
